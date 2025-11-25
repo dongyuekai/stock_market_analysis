@@ -52,12 +52,12 @@ export default function ASharePage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8 text-gray-900">A股市场</h1>
+    <div className="container mx-auto px-4 py-4 md:py-8">
+      <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-8 text-gray-900">A股市场</h1>
 
       {/* 市场指数 */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">市场指数</h2>
+      <section className="mb-6 md:mb-12">
+        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gray-900">市场指数</h2>
         {loading && indices.length === 0 ? (
           <div className="text-center py-8 text-gray-500">加载中...</div>
         ) : (
@@ -74,12 +74,12 @@ export default function ASharePage() {
 
       {/* 热门股票 */}
       <section>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">热门股票</h2>
-          <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 gap-3">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">热门股票</h2>
+          <div className="flex gap-2 w-full sm:w-auto">
             <button
               onClick={() => setActiveTab('rise')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'rise'
+              className={`flex-1 sm:flex-none px-3 md:px-4 py-2 rounded-md text-xs md:text-sm font-medium transition-colors active:scale-95 ${activeTab === 'rise'
                 ? 'bg-red-500 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
@@ -88,7 +88,7 @@ export default function ASharePage() {
             </button>
             <button
               onClick={() => setActiveTab('fall')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'fall'
+              className={`flex-1 sm:flex-none px-3 md:px-4 py-2 rounded-md text-xs md:text-sm font-medium transition-colors active:scale-95 ${activeTab === 'fall'
                 ? 'bg-green-500 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
@@ -97,7 +97,7 @@ export default function ASharePage() {
             </button>
             <button
               onClick={() => setActiveTab('volume')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === 'volume'
+              className={`flex-1 sm:flex-none px-3 md:px-4 py-2 rounded-md text-xs md:text-sm font-medium transition-colors active:scale-95 ${activeTab === 'volume'
                 ? 'bg-blue-500 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}

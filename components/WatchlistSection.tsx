@@ -101,20 +101,20 @@ export default function WatchlistSection() {
   };
 
   return (
-    <div className="mb-8">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-gray-900">我的自选</h2>
-        <div className="flex gap-3">
+    <div className="mb-6 md:mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 md:mb-6 gap-3">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900">我的自选</h2>
+        <div className="flex gap-2 md:gap-3 w-full sm:w-auto">
           <button
             onClick={handleRefresh}
-            className="px-5 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium"
+            className="flex-1 sm:flex-none px-3 md:px-5 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium text-sm md:text-base active:scale-95"
             disabled={loading}
           >
             {loading ? '刷新中...' : '刷新'}
           </button>
           <button
             onClick={() => setIsSearchOpen(true)}
-            className="px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+            className="flex-1 sm:flex-none px-3 md:px-5 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium text-sm md:text-base active:scale-95"
           >
             + 添加股票
           </button>
@@ -122,11 +122,11 @@ export default function WatchlistSection() {
       </div>
 
       {watchlist.length === 0 ? (
-        <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-          <p className="text-xl text-gray-500 mb-4">还没有添加自选股票</p>
+        <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-8 md:p-12 text-center">
+          <p className="text-lg md:text-xl text-gray-500 mb-4">还没有添加自选股票</p>
           <button
             onClick={() => setIsSearchOpen(true)}
-            className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium text-lg"
+            className="px-5 md:px-6 py-2 md:py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium text-base md:text-lg active:scale-95"
           >
             立即添加
           </button>
@@ -145,7 +145,7 @@ export default function WatchlistSection() {
                     handleRemoveStock(stock.code);
                   }
                 }}
-                className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 font-bold"
+                className="absolute top-2 right-2 w-7 h-7 md:w-8 md:h-8 bg-red-500 text-white rounded-full opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 font-bold active:scale-95"
                 title="移除自选"
               >
                 ×

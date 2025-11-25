@@ -59,8 +59,8 @@ export default function CapitalFlowPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-gray-900">主力资金流向</h1>
+    <div className="container mx-auto px-4 py-4 md:py-8">
+      <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-8 text-gray-900">主力资金流向</h1>
 
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="flex items-center gap-4 p-4 bg-gray-50 border-b">

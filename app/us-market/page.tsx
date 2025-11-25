@@ -45,12 +45,12 @@ export default function USMarketPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8 text-gray-900">美股市场</h1>
+    <div className="container mx-auto px-4 py-4 md:py-8">
+      <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-8 text-gray-900">美股市场</h1>
 
       {/* 市场指数 */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">市场指数</h2>
+      <section className="mb-6 md:mb-12">
+        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-gray-900">市场指数</h2>
         {loading && indices.length === 0 ? (
           <div className="text-center py-8 text-gray-500">加载中...</div>
         ) : indices.length > 0 ? (
@@ -69,9 +69,9 @@ export default function USMarketPage() {
 
       {/* 热门股票 */}
       <section>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">热门美股</h2>
-          <span className="text-sm text-gray-700 font-medium">按涨跌幅排序</span>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 md:mb-6 gap-2">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900">热门美股</h2>
+          <span className="text-xs md:text-sm text-gray-700 font-medium">按涨跌幅排序</span>
         </div>
 
         {loading ? (

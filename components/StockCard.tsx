@@ -21,17 +21,17 @@ export default function StockCard({ stock, onClick }: StockCardProps) {
 
   return (
     <div
-      className={`${bgColor} rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow`}
+      className={`${bgColor} rounded-lg p-3 md:p-4 cursor-pointer hover:shadow-md transition-shadow active:scale-95`}
       onClick={onClick}
     >
       <div className="flex justify-between items-start mb-2">
-        <div>
-          <h3 className="font-semibold text-gray-800">{stock.name || '未知'}</h3>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-gray-800 text-sm md:text-base truncate">{stock.name || '未知'}</h3>
           <p className="text-xs text-gray-500">{stock.code || '-'}</p>
         </div>
-        <div className={`text-right ${textColor}`}>
-          <div className="text-xl font-bold">{currentPrice.toFixed(2)}</div>
-          <div className="text-sm">
+        <div className={`text-right ${textColor} ml-2`}>
+          <div className="text-lg md:text-xl font-bold">{currentPrice.toFixed(2)}</div>
+          <div className="text-xs md:text-sm">
             {isRise ? '+' : ''}{changePercent.toFixed(2)}%
           </div>
         </div>

@@ -48,15 +48,15 @@ export default function StockDetailModal({ isOpen, onClose, stockCode, stockName
   const isRise = changePercent >= 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" onClick={onClose}>
-      <div
-        className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto m-4"
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-2 md:p-4" onClick={onClose}>
+      <div 
+        className="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 头部 */}
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">{stockName}</h2>
+        <div className="sticky top-0 bg-white border-b px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
+          <div className="flex-1 min-w-0 mr-4">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 truncate">{stockName}</h2>
             <p className="text-sm text-gray-600">{stockCode}</p>
           </div>
           <div className="flex items-center gap-6">
@@ -78,43 +78,43 @@ export default function StockDetailModal({ isOpen, onClose, stockCode, stockName
         </div>
 
         {/* 内容区 */}
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           {loading ? (
             <div className="text-center py-12 text-gray-500">加载中...</div>
           ) : (
             <>
               {/* 实时行情信息 */}
-              <div className="grid grid-cols-4 gap-4 mb-6">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-sm text-gray-600 mb-1">今开</div>
-                  <div className="text-lg font-semibold text-gray-900">¥{quote?.open.toFixed(2)}</div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
+                <div className="bg-gray-50 p-3 md:p-4 rounded-lg">
+                  <div className="text-xs md:text-sm text-gray-600 mb-1">今开</div>
+                  <div className="text-base md:text-lg font-semibold text-gray-900">￥{quote?.open.toFixed(2)}</div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-sm text-gray-600 mb-1">最高</div>
-                  <div className="text-lg font-semibold text-rise">¥{quote?.high.toFixed(2)}</div>
+                <div className="bg-gray-50 p-3 md:p-4 rounded-lg">
+                  <div className="text-xs md:text-sm text-gray-600 mb-1">最高</div>
+                  <div className="text-base md:text-lg font-semibold text-rise">￥{quote?.high.toFixed(2)}</div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-sm text-gray-600 mb-1">最低</div>
-                  <div className="text-lg font-semibold text-fall">¥{quote?.low.toFixed(2)}</div>
+                <div className="bg-gray-50 p-3 md:p-4 rounded-lg">
+                  <div className="text-xs md:text-sm text-gray-600 mb-1">最低</div>
+                  <div className="text-base md:text-lg font-semibold text-fall">￥{quote?.low.toFixed(2)}</div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-sm text-gray-600 mb-1">成交量</div>
-                  <div className="text-lg font-semibold text-gray-900">
+                <div className="bg-gray-50 p-3 md:p-4 rounded-lg">
+                  <div className="text-xs md:text-sm text-gray-600 mb-1">成交量</div>
+                  <div className="text-base md:text-lg font-semibold text-gray-900">
                     {((quote?.volume ?? 0) / 100000000).toFixed(2)}亿
                   </div>
                 </div>
               </div>
 
               {/* K线图 */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-gray-900">K线走势</h3>
-                  <div className="flex gap-2">
+              <div className="mb-4 md:mb-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 md:mb-4 gap-3">
+                  <h3 className="text-lg md:text-xl font-bold text-gray-900">K线走势</h3>
+                  <div className="flex gap-2 w-full sm:w-auto">
                     {(['day', 'week', 'month'] as const).map((p) => (
                       <button
                         key={p}
                         onClick={() => setPeriod(p)}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${period === p
+                        className={`flex-1 sm:flex-none px-3 md:px-4 py-2 rounded-md text-xs md:text-sm font-medium transition-colors active:scale-95 ${period === p
                           ? 'bg-blue-500 text-white'
                           : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                           }`}
@@ -124,15 +124,15 @@ export default function StockDetailModal({ isOpen, onClose, stockCode, stockName
                     ))}
                   </div>
                 </div>
-                <div className="bg-white border rounded-lg p-4">
+                <div className="bg-white border rounded-lg p-2 md:p-4">
                   <KlineChart data={klineData} />
                 </div>
               </div>
 
               {/* 公告信息 */}
               <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">最新公告</h3>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">最新公告</h3>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 md:p-4">
                   <p className="text-blue-800">
                     💡 实时公告功能开发中，敬请期待...
                   </p>
