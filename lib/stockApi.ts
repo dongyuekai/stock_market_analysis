@@ -11,54 +11,61 @@ const apiClient = axios.create({
 
 /**
  * 获取A股市场指数（上证、深证、北交所）
+ * 使用东方财富API获取实时准确数据
  */
 export async function fetchAShareIndices() {
   try {
-    // 使用腾讯财经API获取指数数据
-    const response = await apiClient.get(
-      "https://qt.gtimg.cn/q=sh000001,sz399001,bj899050",
-      { responseType: "arraybuffer" }
+    // 东方财富API：1.000001=上证指数, 0.399001=深证成指, 0.899050=北证50
+    const indices = [
+      { secid: "1.000001", name: "上证指数", code: "000001" },
+      { secid: "0.399001", name: "深证成指", code: "399001" },
+      { secid: "0.899050", name: "北证50", code: "899050" },
+    ];
+
+    const results = await Promise.all(
+      indices.map(async (index) => {
+        try {
+          const response = await apiClient.get(
+            `https://push2.eastmoney.com/api/qt/stock/get?secid=${index.secid}&fields=f43,f44,f45,f46,f47,f48,f60,f169,f170,f168`
+          );
+
+          const data = response.data?.data;
+          if (!data) return null;
+
+          // f43=现价(单位:分) f60=昨收 f169=涨跌额 f170=涨跌幅(单位:0.01%)
+          // f44=最高 f45=最低 f46=开盘 f47=成交量(手) f48=成交额(元)
+          const currentValue = (data.f43 || 0) / 100;
+          const prevClose = (data.f60 || 0) / 100;
+          const change = (data.f169 || 0) / 100;
+          const changePercent = (data.f170 || 0) / 100;
+          const high = (data.f44 || 0) / 100;
+          const low = (data.f45 || 0) / 100;
+          const open = (data.f46 || 0) / 100;
+          const volume = (data.f47 || 0) * 100; // 转换为股
+          const amount = data.f48 || 0;
+
+          return {
+            code: index.code,
+            name: index.name,
+            currentValue,
+            change,
+            changePercent,
+            open,
+            high,
+            low,
+            close: prevClose,
+            volume,
+            amount,
+            timestamp: new Date().toLocaleString("zh-CN"),
+          };
+        } catch (err) {
+          console.error(`Error fetching ${index.name}:`, err);
+          return null;
+        }
+      })
     );
 
-    // 将GB2312编码转为UTF-8
-    const decoder = new TextDecoder("gbk");
-    const data = decoder.decode(response.data);
-
-    // 解析腾讯财经格式：v_sh000001="1~上证指数~000001~3870.02~..."
-    const matches = data.match(/v_\w+="([^"]+)"/g);
-    if (!matches) return [];
-
-    return matches
-      .map((match) => {
-        const content = match.match(/"([^"]+)"/)?.[1];
-        if (!content) return null;
-
-        const fields = content.split("~");
-        const currentValue = parseFloat(fields[3]) || 0;
-        const prevClose = parseFloat(fields[4]) || 0;
-        const open = parseFloat(fields[5]) || 0;
-        const volume = parseInt(fields[6]) || 0;
-        const high = parseFloat(fields[33]) || 0;
-        const low = parseFloat(fields[34]) || 0;
-        const change = currentValue - prevClose;
-        const changePercent = prevClose > 0 ? (change / prevClose) * 100 : 0;
-
-        return {
-          code: fields[2] || "",
-          name: fields[1] || "",
-          currentValue,
-          change,
-          changePercent,
-          open,
-          high,
-          low,
-          close: prevClose,
-          volume,
-          amount: volume * currentValue,
-          timestamp: fields[30] || new Date().toLocaleString("zh-CN"),
-        };
-      })
-      .filter(Boolean);
+    return results.filter(Boolean);
   } catch (error) {
     console.error("Error fetching A-share indices:", error);
     throw error;
@@ -67,52 +74,50 @@ export async function fetchAShareIndices() {
 
 /**
  * 获取A股股票实时行情
+ * 使用东方财富API获取准确的实时数据
  */
 export async function fetchAShareQuote(stockCode: string) {
   try {
-    // 处理带市场前缀的代码（如 sz300750）或纯数字代码（如 300750）
-    let fullCode = stockCode;
+    // 处理代码格式
     let pureCode = stockCode;
-    
-    if (stockCode.startsWith('sh') || stockCode.startsWith('sz')) {
-      // 已经带前缀
-      fullCode = stockCode;
+    if (stockCode.startsWith("sh") || stockCode.startsWith("sz")) {
       pureCode = stockCode.substring(2);
-    } else {
-      // 纯数字代码，需要添加前缀
-      const prefix = stockCode.startsWith("6") ? "sh" : "sz";
-      fullCode = `${prefix}${stockCode}`;
-      pureCode = stockCode;
     }
 
-    // 使用腾讯财经API（更稳定）
+    // 判断市场：1=上海(6开头), 0=深圳(0/3开头), 0=北交所(4/8开头)
+    let marketId = "0";
+    if (pureCode.startsWith("6")) {
+      marketId = "1";
+    } else if (pureCode.startsWith("4") || pureCode.startsWith("8")) {
+      marketId = "0"; // 北交所也用0
+    }
+
+    const secid = `${marketId}.${pureCode}`;
+
+    // 使用东方财富API获取实时行情
+    // f57=代码 f58=名称 f43=现价 f169=涨跌额 f170=涨跌幅
+    // f46=开盘 f44=最高 f45=最低 f60=昨收 f47=成交量 f48=成交额
     const response = await apiClient.get(
-      `https://qt.gtimg.cn/q=${fullCode}`,
-      { responseType: 'arraybuffer' }
+      `https://push2.eastmoney.com/api/qt/stock/get?secid=${secid}&fields=f57,f58,f43,f169,f170,f46,f44,f45,f60,f47,f48,f168`
     );
 
-    const decoder = new TextDecoder('gbk');
-    const text = decoder.decode(response.data);
+    const data = response.data?.data;
+    if (!data) throw new Error("Invalid stock code or no data");
 
-    // 解析腾讯财经返回格式: v_sz300750="51~宁德时代~300750~596.00~..."
-    const match = text.match(/v_.+?="(.+?)";/);
-    if (!match) throw new Error("Invalid stock code");
-
-    const fields = match[1].split("~");
-
+    // 东方财富返回的价格单位是分，需要除以100
     return {
       code: pureCode,
-      name: fields[1],
-      currentPrice: parseFloat(fields[3]),
-      change: parseFloat(fields[31]),
-      changePercent: parseFloat(fields[32]),
-      open: parseFloat(fields[5]),
-      high: parseFloat(fields[33]),
-      low: parseFloat(fields[34]),
-      close: parseFloat(fields[4]),
-      volume: parseInt(fields[6]),
-      amount: parseFloat(fields[37]),
-      timestamp: fields[30],
+      name: data.f58 || "",
+      currentPrice: (data.f43 || 0) / 100,
+      change: (data.f169 || 0) / 100,
+      changePercent: (data.f170 || 0) / 100,
+      open: (data.f46 || 0) / 100,
+      high: (data.f44 || 0) / 100,
+      low: (data.f45 || 0) / 100,
+      close: (data.f60 || 0) / 100,
+      volume: (data.f47 || 0) * 100, // 手转为股
+      amount: data.f48 || 0,
+      timestamp: new Date().toLocaleString("zh-CN"),
     };
   } catch (error) {
     console.error("Error fetching stock quote:", error);
@@ -211,12 +216,12 @@ export async function fetchHotStocks(
     // 解析东方财富数据格式
     if (response.data?.data?.diff) {
       return response.data.data.diff.map((item: any) => {
-        // 东方财富的价格字段需要除以100（不是1000）
-        const price = (item.f2 || 0) / 100;
-        const high = (item.f15 || 0) / 100;
-        const low = (item.f16 || 0) / 100;
-        const open = (item.f17 || 0) / 100;
-        const close = (item.f18 || 0) / 100;
+        // 注意：东方财富这个API的价格已经是正确单位，不需要除以100
+        const price = item.f2 || 0;
+        const high = item.f15 || 0;
+        const low = item.f16 || 0;
+        const open = item.f17 || 0;
+        const close = item.f18 || 0;
 
         return {
           code: item.f12 || "", // 股票代码
